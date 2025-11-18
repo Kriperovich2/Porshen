@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ПОРШЕНЬ</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;}
+    body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f172a;color:#e6eef8;padding:20px;box-sizing:border-box}
+    .card{width:100%;max-width:900px;background:linear-gradient(180deg,#081028 0%, #071022 100%);border-radius:12px;padding:20px;box-shadow:0 10px 30px rgba(2,6,23,.7);box-sizing:border-box;overflow:hidden}
+    h1{margin:0 0 14px;font-size:28px;letter-spacing:2px;text-align:center}
+
+    /* NEW — адаптация под мобильные устройства */
+    .grid{display:flex;flex-direction:column;gap:16px;align-items:stretch}
+    @media (min-width: 760px){
+      .grid{display:grid;grid-template-columns:1fr 150px 1fr;gap:16px;align-items:center}
+    }
+
+    textarea{width:100%;min-height:160px;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04);color:inherit;font-size:15px;resize:vertical;box-sizing:border-box;overflow:auto;word-break:break-word;white-space:pre-wrap}
+
+    button{display:block;width:100%;padding:12px;border-radius:10px;border:0;background:#2563eb;color:white;font-weight:600;cursor:pointer;box-sizing:border-box}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.15)}
+    .center-buttons{display:flex;flex-direction:column;gap:10px;align-items:stretch;width:100%}
+
+    .hint{font-size:13px;opacity:.8;margin-top:4px;text-align:center}
+
+    .mapping{margin-top:18px;background:rgba(255,255,255,.03);padding:12px;border-radius:8px;font-size:13px;overflow:auto;max-height:240px;box-sizing:border-box;word-break:break-word;white-space:pre-wrap}
+
+    footer{text-align:center;color:#9fb0d8;font-size:13px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>ПОРШЕНЬ</h1>
+
+    <div class="grid">
+      <div>
+        <label class="small">Ввести текст (для шифрования) / Вставить шифр (для расшифровки)</label>
+        <textarea id="input" placeholder="Например: ПРИВЕТ, как дела?"></textarea>
+      </div>
+
+      <div class="center-buttons">
+        <button id="decode">Расшифровать →</button>
+        <button id="encode" class="btn-ghost">← Наоборот (зашифровать)</button>
+        <button id="swap" class="btn-ghost">Очистить оба поля</button>
+        <div class="hint">Система использует только буквы «П О Р Ш Е Н Ь» в качестве символов шифра.</div>
+      </div>
+
+      <div>
+        <label class="small">Результат</label>
+        <textarea id="output" readonly placeholder="Результат появится здесь"></textarea>
+      </div>
+    </div>
+
+    <div class="mapping" id="mappingBox" aria-hidden="false">
+      <strong>Алфавит шифра «ПОРШЕНЬ»</strong>
+      <div style="margin-top:10px;font-family:monospace;white-space:pre-wrap">
+А → ПП
+Б → ПО
+В → ПР
+Г → ПШ
+Д → ПЕ
+Е → ПН
+Ё → ПЬ
+Ж → ОП
+З → ОО
+И → ОР
+Й → ОШ
+К → ОЕ
+Л → ОН
+М → ОЬ
+Н → РП
+О → РО
+П → РР
+Р → РШ
+С → РЕ
+Т → РН
+У → РЬ
+Ф → ШП
+Х → ШО
+Ц → ШР
+Ч → ШШ
+Ш → ШЕ
+Щ → ШН
+Ъ → ШЬ
+Ы → ЕП
+Ь → ЕО
+Э → ЕР
+Ю → ЕШ
+Я → ЕЕ
+
+Пробел → ЕН
+Точка → ЕЬ
+Запятая → НП
+Цифры 0–9 → НО, НР, НШ, НЕ, НН, НЬ, ЬП, ЬО, ЬР, ЬШ
+      </div>
+    </div>
+    <footer>Совместимо с кириллическими буквами (А–Я, включая Ё). Нажмите «Наоборот», чтобы зашифровать; «Расшифровать» — чтобы получить исходный текст.</footer>
+  </div>
+
+<script>
+(function(){
+  const pairFor = {
+    'А':'ПП','Б':'ПО','В':'ПР','Г':'ПШ','Д':'ПЕ','Е':'ПН','Ё':'ПЬ',
+    'Ж':'ОП','З':'ОО','И':'ОР','Й':'ОШ','К':'ОЕ','Л':'ОН','М':'ОЬ',
+    'Н':'РП','О':'РО','П':'РР','Р':'РШ','С':'РЕ','Т':'РН','У':'РЬ',
+    'Ф':'ШП','Х':'ШО','Ц':'ШР','Ч':'ШШ','Ш':'ШЕ','Щ':'ШН','Ъ':'ШЬ',
+    'Ы':'ЕП','Ь':'ЕО','Э':'ЕР','Ю':'ЕШ','Я':'ЕЕ',
+    ' ':'ЕН',',':'НП','.':'ЕЬ',
+    '0':'НО','1':'НР','2':'НШ','3':'НЕ','4':'НН','5':'НЬ','6':'ЬП','7':'ЬО','8':'ЬР','9':'ЬШ'
+  };
+
+  // build reverse map
+  const charFor = {};
+  for(const k in pairFor) charFor[pairFor[k]] = k;
+
+  // allowed cipher letters for decode validation
+  const allowed = new Set(['П','О','Р','Ш','Е','Н','Ь']);
+
+  const input = document.getElementById('input');
+  const output = document.getElementById('output');
+  const decodeBtn = document.getElementById('decode');
+  const encodeBtn = document.getElementById('encode');
+  const swapBtn = document.getElementById('swap');
+
+  function normalizeText(s){
+    if(!s) return '';
+    // uppercase and normalize ё
+    s = s.toString().toUpperCase();
+    s = s.replace(/Ё/g,'Ё');
+    return s;
+  }
+
+  function encode(text){
+    text = normalizeText(text);
+    let res = '';
+    for(const ch of text){
+      if(pairFor.hasOwnProperty(ch)) res += pairFor[ch];
+      else if(/[A-Z]/i.test(ch)){
+        // latin letters — leave as ? marker
+        res += '??';
+      } else {
+        // unknown character — use ?? as placeholder
+        res += '??';
+      }
+    }
+    return res;
+  }
+
+  function decode(cipher){
+    cipher = cipher.toString().toUpperCase().replace(/\s+/g,'');
+    // validate characters
+    for(const ch of cipher){
+      if(!allowed.has(ch)){
+        return {ok:false,error:'Шифр может содержать только буквы П О Р Ш Е Н Ь (без пробелов).'};
+      }
+    }
+    if(cipher.length % 2 !== 0) return {ok:false,error:'Длина шифра нечётная — ожидаются пары символов.'};
+
+    let res = '';
+    for(let i=0;i<cipher.length;i+=2){
+      const pair = cipher[i]+cipher[i+1];
+      if(charFor.hasOwnProperty(pair)) res += charFor[pair];
+      else res += '�';
+    }
+    return {ok:true,text:res};
+  }
+
+  decodeBtn.addEventListener('click', ()=>{
+    const v = input.value.trim();
+    if(!v){ output.value = ''; return; }
+    const result = decode(v);
+    if(!result.ok) output.value = result.error; else output.value = result.text;
+  });
+
+  encodeBtn.addEventListener('click', ()=>{
+    const v = input.value;
+    if(!v){ output.value = ''; return; }
+    output.value = encode(v);
+  });
+
+  swapBtn.addEventListener('click', ()=>{ input.value=''; output.value=''; });
+
+  // keyboard: Ctrl+Enter to encode, Shift+Enter to decode for convenience
+  input.addEventListener('keydown', (e)=>{
+    if(e.ctrlKey && e.key==='Enter'){ e.preventDefault(); encodeBtn.click(); }
+    if(e.shiftKey && e.key==='Enter'){ e.preventDefault(); decodeBtn.click(); }
+  });
+
+})();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Расшифроватор</title>
+  <style>
+    :root{ --bg:#0f1724; --card:#0b1220; --accent:#60a5fa; --text:#e6eef8 }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,'Helvetica Neue',sans-serif;background:linear-gradient(180deg,#071022 0%, #0b1220 100%);color:var(--text)}
+    .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px}
+    .card{background:rgba(255,255,255,0.03);padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.6);max-width:840px;width:100%}
+    h1{margin:0 0 18px 0;font-size:20px;font-weight:600;text-align:center}
+    pre{font-family:SFMono-Regular,Menlo,Monaco,monospace;font-size:18px;line-height:1.35;white-space:pre-wrap;margin:0;word-break:break-word}
+    .footer{display:flex;justify-content:center;margin-top:800px}
+    .btn{display:inline-block;padding:12px 18px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--text);text-decoration:none;font-weight:600;backdrop-filter:blur(6px)}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(2,6,23,0.45)}
+    /* make button link stand out on small screens */
+    @media (max-width:520px){.card{padding:18px}.btn{width:100%;text-align:center}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="main">
+      <h1>Расшифроватор</h1>
+      <pre aria-label="Таблица соответствий">
+А → ПП
+Б → ПО
+В → ПР
+Г → ПШ
+Д → ПЕ
+Е → ПН
+Ё → ПЬ
+Ж → ОП
+З → ОО
+И → ОР
+Й → ОШ
+К → ОЕ
+Л → ОН
+М → ОЬ
+Н → РП
+О → РО
+П → РР
+Р → РШ
+С → РЕ
+Т → РН
+У → РЬ
+Ф → ШП
+Х → ШО
+Ц → ШР
+Ч → ШШ
+Ш → ШЕ
+Щ → ШН
+Ъ → ШЬ
+Ы → ЕП
+Ь → ЕО
+Э → ЕР
+Ю → ЕШ
+Я → ЕЕ
+</pre>
+      <div class="footer">
+        <a class="btn" href="#" title="а если вы пусечка пользуйтесь расшифроватором">а если вы пусечка пользуйтесь расшифроватором</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
